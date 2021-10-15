@@ -258,7 +258,11 @@ void Initiator::stop( bool force )
   {
     Locker l(m_mutex);
     for ( i = connected.begin(); i != connected.end(); ++i )
-      setDisconnected( Session::lookupSession(*i)->getSessionID() );
+    {
+      Session* pSession = Session::lookupSession(*i);
+      if( pSession )
+        setDisconnected( pSession->getSessionID() );
+    }
   }
 
   m_stop = true;
@@ -280,7 +284,8 @@ bool Initiator::isLoggedOn()
   SessionIDs::iterator i = connected.begin();
   for ( ; i != connected.end(); ++i )
   {
-    if( Session::lookupSession(*i)->isLoggedOn() )
+    Session* pSession = Session::lookupSession(*i);
+    if( pSession && pSession->isLoggedOn() )
       return true;
   }
   return false;
